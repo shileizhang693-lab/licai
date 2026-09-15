@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>币圈理财收益记录器</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#172033;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}.wrap{max-width:1050px;margin:auto;padding:22px 14px 45px}.head h1{margin:0 0 6px;font-size:25px}.head p{margin:0 0 16px;color:#70798a;font-size:13px}.card{background:#fff;border:1px solid #e5e9f0;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 5px 22px rgba(30,40,60,.04)}.title{font-weight:700;margin-bottom:12px}.summary{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.stat{background:#f7f9fc;border-radius:12px;padding:13px}.stat .l{font-size:12px;color:#788294}.stat .v{font-size:19px;font-weight:700;margin-top:4px;word-break:break-all}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:8px 5px;border-bottom:1px solid #edf0f4;text-align:left}.table th{font-size:12px;color:#788294}.table td{font-size:13px}.table input,.table select{width:100%;padding:9px;border:1px solid #dfe4ec;border-radius:8px;background:#fff}.profit{font-weight:700;white-space:nowrap}.badge{display:inline-block;padding:4px 8px;border-radius:15px;font-size:11px}.active{background:#edf7ee}.ended{background:#f0f1f4}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}button{border:0;border-radius:9px;padding:10px 14px;cursor:pointer;font-size:13px}.primary{background:#3044d8;color:#fff}.gray{background:#edf0f6;color:#344054}.red{background:#fff0f0;color:#c62828}.note{font-size:12px;color:#7a8495;line-height:1.7;margin-top:10px}.fx{font-size:12px;color:#687386;margin-top:8px}.history{overflow-x:auto}.history table{min-width:900px;width:100%;border-collapse:collapse}.history th,.history td{padding:9px 6px;border-bottom:1px solid #edf0f4;text-align:left;font-size:12px}.history th{color:#788294}.pos{font-weight:700}.neg{font-weight:700}.small{font-size:11px;color:#8992a1}.empty{color:#8a93a3;font-size:13px;padding:10px 0}
+@media(max-width:700px){
+  .summary{grid-template-columns:1fr 1fr 1fr}.wrap{padding:16px 9px}.head h1{font-size:21px}
+  .table thead{display:none}
+  .table,.table tbody,.table tr,.table td{display:block;width:100%}
+  .table tr{position:relative;padding:12px 0 10px;border-bottom:1px solid #edf0f4}
+  .table td{border:0;padding:4px 0;display:grid;grid-template-columns:72px 1fr;align-items:center;gap:7px}
+  .table td:before{font-size:11px;color:#7d8797;font-weight:600}
+  .table td:nth-child(1):before{content:"账号名称"}
+  .table td:nth-child(2):before{content:"币种"}
+  .table td:nth-child(3):before{content:"金额 U"}
+  .table td:nth-child(4):before{content:"年化 %"}
+  .table td:nth-child(5){grid-template-columns:72px 150px}
+  .table td:nth-child(5):before{content:"结束时间"}
+  .table td:nth-child(6):before{content:"状态"}
+  .table td:nth-child(7){display:block;position:absolute;right:0;top:12px}
+  .table td:nth-child(7):before{display:none}
+  .table td:nth-child(7) button{padding:7px 10px}
+  .table td:nth-child(5) input{width:150px;font-size:12px;padding:8px}
+  .table td:nth-child(1) input,.table td:nth-child(2) input,.table td:nth-child(3) input,.table td:nth-child(4) input{max-width:210px}
+}
+@media(max-width:460px){.summary{grid-template-columns:1fr}.table td{grid-template-columns:62px 1fr}.table td:nth-child(5){grid-template-columns:62px 150px}}
+
+
+@media(max-width:700px){
+.history table{min-width:0;width:100%}.history table thead{display:none}
+.history table,.history table tbody,.history table tr,.history table td{display:block;width:100%}
+.history table tr{padding:10px 0;border-bottom:1px solid #edf0f4}
+.history table td{border:0;padding:3px 0;display:grid;grid-template-columns:78px 1fr;gap:6px}
+.history table td:before{font-size:11px;color:#7d8797;font-weight:600}
+.history table td:nth-child(1):before{content:"账号"}.history table td:nth-child(2):before{content:"币种"}
+.history table td:nth-child(3):before{content:"本金"}.history table td:nth-child(4):before{content:"年化"}
+.history table td:nth-child(5):before{content:"已持续"}.history table td:nth-child(6):before{content:"当前收益"}
+.history table td:nth-child(7):before{content:"当前汇率"}.history table td:nth-child(8):before{content:"人民币盈亏"}
+.history table td:nth-child(9):before{content:"状态"}
+}</style>
+
+<style id="compact-ui">
+:root{--gap:10px}
+*{box-sizing:border-box}
+body{margin:0;font-size:14px;line-height:1.45;background:#f5f7fb}
+.container,.wrap,.page{max-width:1100px!important;padding:14px!important;margin:auto}
+header,.header{padding:10px 0!important;margin-bottom:10px!important}
+h1{font-size:22px!important;margin:0 0 3px!important}
+h2{font-size:16px!important;margin:0 0 8px!important}
+h3{font-size:14px!important;margin:0 0 6px!important}
+p{margin:3px 0!important}
+.card,.panel,.section,.box{padding:12px!important;margin-bottom:10px!important;border-radius:12px!important}
+.grid,.cards,.summary,.stats{gap:8px!important}
+button{min-height:36px!important;padding:7px 12px!important;border-radius:8px!important;font-size:13px!important}
+input,select{min-height:36px!important;padding:7px 9px!important;border-radius:8px!important;font-size:13px!important}
+table{font-size:12px!important}
+th,td{padding:7px 6px!important}
+.modal-content,.modal .content{max-width:520px!important;padding:16px!important;border-radius:14px!important}
+.form-group,.field{margin-bottom:8px!important}
+label{margin-bottom:3px!important;font-size:12px!important}
+#endFields{gap:6px!important}
+#fxText{font-size:12px!important}
+@media(max-width:700px){
+ .container,.wrap,.page{padding:9px!important}
+ header,.header{padding:7px 0!important}
+ h1{font-size:19px!important}
+ .card,.panel,.section,.box{padding:10px!important;margin-bottom:8px!important}
+ .summary,.cards,.stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ table,thead,tbody,tr,th,td{display:block!important}
+ thead{display:none!important}
+ tr{padding:8px!important;margin-bottom:7px!important;border:1px solid #e6e9ef;border-radius:10px;background:#fff}
+ td{display:flex!important;justify-content:space-between;gap:10px;padding:4px 2px!important;border:0!important}
+ td:before{font-weight:600;opacity:.65;content:attr(data-label)}
+ .modal-content,.modal .content{width:calc(100vw - 24px)!important;padding:13px!important}
+ #endFields{grid-template-columns:1fr 1fr!important}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<div class="head"><h1>💰 币圈理财收益记录器</h1><p>添加每一笔理财，自动记录开始汇率；随时查看当前收益、到期收益和全部历史收益</p></div>
+
+<div class="card">
+<div class="title">资金明细</div>
+<table class="table">
+<thead><tr><th style="width:16%">账号名称</th><th style="width:15%">币种</th><th style="width:17%">金额 U</th><th style="width:14%">年化 %</th><th style="width:20%">结束时间</th><th style="width:18%">收益状态</th><th></th></tr></thead>
+<tbody id="rows"></tbody>
+</table>
+<div class="actions"><button class="primary" onclick="openAdd()">＋ 添加理财</button></div>
+<div class="fx">开始添加理财时会自动记录 U/RMB 汇率；查看收益时自动获取最新 U/RMB 汇率。若网络无法获取实时汇率，会使用最近一次成功获取的汇率。</div>
+</div>
+
+<div class="card">
+<div class="title">收益总览</div>
+<div class="summary">
+<div class="stat"><div class="l">当前总本金</div><div class="v" id="totalPrincipal">0 U</div></div>
+<div class="stat"><div class="l">当前累计理财收益</div><div class="v" id="totalInterest">0 U</div></div>
+<div class="stat"><div class="l">预估每日收入</div><div class="v" id="dailyIncome">0 U</div></div>
+<div class="stat"><div class="l">预估月收入</div><div class="v" id="monthlyIncome">0 U</div></div>
+<div class="stat"><div class="l">当前人民币总收益</div><div class="v" id="totalRmb">0 RMB</div></div>
+<div class="stat"><div class="l">当前 U/RMB</div><div class="v" id="currentFx">7.1200</div></div>
+</div>
+<div class="note" id="overviewNote">人民币收益同时考虑理财收益和 U/RMB 汇率变化。每笔活动均独立计算。</div>
+</div>
+
+<div class="card">
+<div class="title">本次/当前理财收益</div>
+<div class="history"><table>
+<thead><tr><th>账号</th><th>币种</th><th>本金</th><th>年化</th><th>已持续</th><th>当前收益 U</th><th>当前汇率</th><th>人民币实际盈亏</th><th>状态</th></tr></thead>
+<tbody id="currentRows"></tbody>
+</table></div>
+</div>
+
+<div class="card">
+<div class="title">过去所有理财收益</div>
+<div class="history"><table>
+<thead><tr><th>账号</th><th>币种</th><th>开始时间</th><th>结束时间</th><th>本金</th><th>年化</th><th>理财收益 U</th><th>开始汇率</th><th>结束汇率</th><th>人民币实际盈亏</th></tr></thead>
+<tbody id="historyRows"></tbody>
+</table></div>
+<div class="actions"><button class="gray" onclick="exportData()">导出记录</button><button class="red" onclick="clearAll()">清空全部</button></div>
+</div>
+</div>
+
+<script>
+const KEY="crypto_finance_tracker_v3";
+let state=JSON.parse(localStorage.getItem(KEY)||"null")||{activities:[],history:[],lastFx:7.12};
+
+function fmt(n,d=6){return Number(n||0).toLocaleString("zh-CN",{maximumFractionDigits:d})}
+function esc(s){return String(s??"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+async function getFx(){
+  const urls=[
+    "https://api.frankfurter.app/latest?from=USD&to=CNY",
+    "https://open.er-api.com/v6/latest/USD"
+  ];
+  for(const url of urls){
+    try{
+      const c=new AbortController();
+      const timer=setTimeout(()=>c.abort(),4500);
+      const r=await fetch(url,{cache:"no-store",signal:c.signal});
+      clearTimeout(timer);
+      const j=await r.json();
+      const v=Number(j&&j.rates&&j.rates.CNY);
+      if(Number.isFinite(v)&&v>0){state.lastFx=v;save();document.getElementById("currentFx").textContent=fmt(v,4);return v;}
+    }catch(e){}
+  }
+  const fallback=Number(state.lastFx)||7.12;
+  document.getElementById("currentFx").textContent=fmt(fallback,4)+"（缓存）";
+  return fallback;
+}
+
+function openAdd(){
+  const now=new Date(), pad=n=>String(n).padStart(2,"0");
+  document.getElementById("mAccount").value="账号"+(state.activities.length+state.history.length+1);
+  document.getElementById("mCoin").value="USDT";
+  document.getElementById("mAmount").value=5000;
+  document.getElementById("mApy").value=8;
+  document.getElementById("mEndMode").value="auto";
+  document.getElementById("mEndDate").value=now.getFullYear()+"-"+pad(now.getMonth()+1)+"-"+pad(now.getDate());
+  document.getElementById("mEndTime").value="08:00";
+  toggleEndFields();
+  document.getElementById("modal").style.display="block";
+}
+function toggleEndFields(){
+  const manual=document.getElementById("mEndMode").value==="manual";
+  document.getElementById("endDateField").style.display=manual?"none":"block";
+  document.getElementById("endTimeField").style.display=manual?"none":"block";
+}
+function closeAdd(){document.getElementById("modal").style.display="none"}
+async function confirmAdd(){
+  const account=document.getElementById("mAccount").value.trim()||"账号1";
+  const coin=document.getElementById("mCoin").value.trim()||"USDT";
+  const amount=Number(document.getElementById("mAmount").value)||0;
+  const apy=Number(document.getElementById("mApy").value)||0;
+  const mode=document.getElementById("mEndMode").value;
+  const date=document.getElementById("mEndDate").value;
+  const time=document.getElementById("mEndTime").value||"08:00";
+  if(amount<=0){alert("请输入大于 0 的金额");return}
+  const now=Date.now(),fx=await getFx();
+  let endTime="";
+  if(mode==="auto" && date) endTime=date+"T"+time;
+  state.activities.push({id:now+Math.random(),account,coin,amount,apy,endTime,createdAt:now,startFx:fx});
+  save();closeAdd();render();
+}
+function upd(id,k,v){
+  let a=state.activities.find(x=>x.id==id);if(!a)return;
+  a[k]=(k==="account"||k==="coin"||k==="endTime")?v:(Number(v)||0);save();render(false);
+}
+function removeActivity(id){state.activities=state.activities.filter(x=>x.id!=id);save();render()}
+function startDate(a){return new Date(a.createdAt||0)}
+function calcActivity(a,fx){
+  let start=a.createdAt||Date.now(),end=Date.now();
+  let elapsed=Math.max(0,(end-start)/86400000);
+  let interest=(Number(a.amount)||0)*(Number(a.apy)||0)/100/365*elapsed;
+  let initialRmb=(Number(a.amount)||0)*(Number(a.startFx)||fx);
+  let currentRmb=((Number(a.amount)||0)+interest)*fx;
+  return {elapsed,interest,initialRmb,currentRmb,profit:currentRmb-initialRmb};
+}
+function renderRows(){
+ let tb=document.getElementById("rows");tb.innerHTML="";
+ state.activities.forEach(a=>{
+  let tr=document.createElement("tr");
+  tr.innerHTML=`<td><input value="${esc(a.account)}" oninput="upd(${a.id},'account',this.value)"></td>
+  <td><input value="${esc(a.coin)}" oninput="upd(${a.id},'coin',this.value)"></td>
+  <td><input type="number" min="0" step="any" value="${a.amount}" oninput="upd(${a.id},'amount',this.value)"></td>
+  <td><input type="number" min="0" step="any" value="${a.apy}" oninput="upd(${a.id},'apy',this.value)"></td>
+  <td><input type="datetime-local" value="${esc(a.endTime)}" onchange="upd(${a.id},'endTime',this.value)"></td>
+  <td><span class="badge ${a.endTime&&new Date(a.endTime)<=new Date()?'ended':'active'}">${a.endTime&&new Date(a.endTime)<=new Date()?'已到期':'进行中'}</span></td>
+  <td><button class="red" onclick="removeActivity(${a.id})">删除</button></td>`;
+  tb.appendChild(tr);
+ });
+}
+function renderCurrent(fx){
+ let tb=document.getElementById("currentRows");tb.innerHTML="";
+ let totalP=0,totalI=0,totalR=0,totalDaily=0;
+ state.activities.forEach(a=>{
+  if(!a.createdAt)a.createdAt=Date.now();
+  if(!a.startFx)a.startFx=fx;
+  let c=calcActivity(a,fx),ended=a.endTime&&new Date(a.endTime)<=new Date();
+  totalP+=Number(a.amount)||0;totalI+=c.interest;totalR+=c.profit;totalDaily+=(Number(a.amount)||0)*(Number(a.apy)||0)/100/365;
+  let tr=document.createElement("tr");
+  tr.innerHTML=`<td>${esc(a.account)}</td><td>${esc(a.coin)}</td><td>${fmt(a.amount)} U</td><td>${fmt(a.apy,4)}%</td>
+  <td>${fmt(c.elapsed,2)} 天</td><td>${fmt(c.interest)} U</td><td>${fmt(fx,4)}</td>
+  <td class="${c.profit>=0?'pos':'neg'}">${c.profit>=0?'+':'-'}${fmt(Math.abs(c.profit),2)} RMB</td>
+  <td><span class="badge ${ended?'ended':'active'}">${ended?'已到期':'进行中'}</span>${!ended?`<br><button class="gray" style="margin-top:4px;padding:5px 8px" onclick="manualFinish(${a.id})">手动结束</button>`:""}</td>`;
+  tb.appendChild(tr);
+ });
+ document.getElementById("totalPrincipal").textContent=fmt(totalP)+" U";
+ document.getElementById("totalInterest").textContent=fmt(totalI)+" U";
+ document.getElementById("dailyIncome").textContent=fmt(totalDaily)+" U";
+ document.getElementById("monthlyIncome").textContent=fmt(totalDaily*30)+" U";
+ document.getElementById("totalRmb").textContent=(totalR>=0?"+":"-")+fmt(Math.abs(totalR),2)+" RMB";
+ document.getElementById("currentFx").textContent=fmt(fx,4);
+ if(!state.activities.length)tb.innerHTML='<tr><td colspan="9" class="empty">还没有添加理财，点击“＋ 添加理财”开始记录。</td></tr>';
+}
+function renderHistory(){
+ let tb=document.getElementById("historyRows");tb.innerHTML="";
+ if(!state.history.length){tb.innerHTML='<tr><td colspan="10" class="empty">暂无已结束理财记录。</td></tr>';return}
+ state.history.forEach((h,i)=>{
+  let p=Number(h.profit)||0;
+  let tr=document.createElement("tr");
+  tr.innerHTML=`<td>${esc(h.account)}</td><td>${esc(h.coin)}</td><td>${new Date(h.createdAt).toLocaleString()}</td><td>${new Date(h.endAt).toLocaleString()}</td>
+  <td>${fmt(h.amount)} U</td><td>${fmt(h.apy,4)}%</td><td>${fmt(h.interest)} U</td><td>${fmt(h.startFx,4)}</td><td>${fmt(h.endFx,4)}</td>
+  <td class="${p>=0?'pos':'neg'}">${p>=0?'+':'-'}${fmt(Math.abs(p),2)} RMB<br><button class="gray" onclick="deleteHistory(${i})">删除</button></td>`;
+  tb.appendChild(tr);
+ });
+}
+async function manualFinish(id){
+  let a=state.activities.find(x=>x.id==id);if(!a)return;
+  if(!confirm("确定现在结束这笔理财吗？"))return;
+  const fx=await getFx(),now=Date.now(),elapsed=Math.max(0,(now-a.createdAt)/86400000);
+  const interest=(Number(a.amount)||0)*(Number(a.apy)||0)/100/365*elapsed;
+  const initialRmb=(Number(a.amount)||0)*a.startFx,finalRmb=((Number(a.amount)||0)+interest)*fx;
+  state.history.unshift({account:a.account,coin:a.coin,amount:a.amount,apy:a.apy,createdAt:a.createdAt,endAt:now,startFx:a.startFx,endFx:fx,interest,profit:finalRmb-initialRmb});
+  state.activities=state.activities.filter(x=>x.id!=id);save();render();
+}
+function finalizeExpired(){
+ let now=Date.now(),keep=[];
+ state.activities.forEach(a=>{
+  if(a.endTime&&new Date(a.endTime).getTime()<=now){
+   let endFx=state.lastFx||7.12, elapsed=Math.max(0,(new Date(a.endTime).getTime()-a.createdAt)/86400000);
+   let interest=(Number(a.amount)||0)*(Number(a.apy)||0)/100/365*elapsed;
+   let initialRmb=(Number(a.amount)||0)*a.startFx, finalRmb=((Number(a.amount)||0)+interest)*endFx;
+   let c={elapsed,interest,profit:finalRmb-initialRmb};
+   state.history.unshift({account:a.account,coin:a.coin,amount:a.amount,apy:a.apy,createdAt:a.createdAt,endAt:new Date(a.endTime).getTime(),startFx:a.startFx,endFx,interest:c.interest,profit:c.profit});
+  }else keep.push(a);
+ });
+ state.activities=keep;save();
+}
+function deleteHistory(i){state.history.splice(i,1);save();render()}
+function clearAll(){if(confirm("确定清空所有当前和历史记录吗？")){state={activities:[],history:[],lastFx:state.lastFx};save();render()}}
+function exportData(){let blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="币圈理财收益记录.json";a.click();URL.revokeObjectURL(a.href)}
+async function render(doFx=true){
+ finalizeExpired();renderRows();renderHistory();
+ let fx=doFx?await getFx():(Number(state.lastFx)||7.12);
+ state.activities.forEach(a=>{if(!a.createdAt)a.createdAt=Date.now();if(!a.startFx)a.startFx=fx});
+ save();renderCurrent(fx);
+}
+render();setInterval(()=>render(),60000);
+</script>
+
+<div id="modal" style="display:none;position:fixed;inset:0;background:rgba(10,18,35,.45);z-index:10;padding:18px;overflow:auto">
+<div style="max-width:520px;margin:7vh auto;background:#fff;border-radius:16px;padding:18px;box-shadow:0 15px 50px rgba(0,0,0,.2)">
+<div style="font-size:19px;font-weight:700;margin-bottom:14px">添加理财</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div class="field"><label>账号名称</label><input id="mAccount" value="账号1" placeholder="账号1 / 自定义"></div>
+<div class="field"><label>币种</label><input id="mCoin" value="USDT" placeholder="USDT / UUU"></div>
+<div class="field"><label>金额 U</label><input id="mAmount" type="number" min="0" step="any" value="5000"></div>
+<div class="field"><label>年化 %</label><input id="mApy" type="number" min="0" step="any" value="8"></div>
+<div class="field"><label>结束方式</label><select id="mEndMode" onchange="toggleEndFields()"><option value="auto">设置结束时间（默认 08:00）</option><option value="manual">不设置结束时间，手动结束</option></select></div>
+<div class="field" id="endDateField"><label>结束日期</label><input id="mEndDate" type="date"></div>
+<div class="field" id="endTimeField"><label>结束时间</label><input id="mEndTime" type="time" value="08:00"></div>
+</div>
+<div style="margin-top:10px;font-size:12px;color:#7a8495">开始时间不需要填写，点击“添加”时自动记录当前时间。选择“不设置结束时间”后，这笔理财会一直进行，直到你在当前理财列表里点击“手动结束”。</div>
+<div class="actions"><button class="primary" onclick="confirmAdd()">添加理财</button><button class="gray" onclick="closeAdd()">取消</button></div>
+</div></div>
+</body>
+</html>
